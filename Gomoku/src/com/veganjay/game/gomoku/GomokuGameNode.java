@@ -75,22 +75,6 @@ public class GomokuGameNode {
 
 	public Set<GomokuGameNode> getChildren() {
 		Set<GomokuGameNode> children = new HashSet<GomokuGameNode>();
-
-		int minRow = getMinRow((GomokuBoard) board);
-		int maxRow = getMaxRow((GomokuBoard) board);
-		int minCol = getMinCol((GomokuBoard) board);
-		int maxCol = getMaxCol((GomokuBoard) board);
-		
-		minRow = subtract(minRow, 2);
-		maxRow = add(maxRow, 2);
-
-		minCol = subtract(minCol, 3);
-		maxCol = add(maxCol, 3);
-		//logger.debug("minRow = " + minRow + ", maxRow=" + maxRow);
-		//logger.debug("minCol = " + minCol + ", maxCol=" + maxCol);
-
-//		for (int row = 0; row < GomokuBoard.SIZE; row++) {
-//			for (int col = 0; col < GomokuBoard.SIZE; col++) {
 		
 		Set<Move> adjacentMoves = this.getAdjacentMoves();
 		
@@ -101,9 +85,8 @@ public class GomokuGameNode {
 			// Attempt to add the piece to the board
 			boolean success = childBoard.addPiece(move.getRow(), move.getCol(), currentPlayer);
 
+			// If an invalid move, skip it
 			if (!success) {
-//				System.out.println("piece occupied" + row +", " + col);
-//				board.printBoard();
 				continue;
 			}
 		
@@ -111,27 +94,6 @@ public class GomokuGameNode {
 			GomokuGameNode child = new GomokuGameNode(childBoard, getNextPlayer(), move.getRow(), move.getCol());
 			children.add(child);
 		}
-		/*
-		for (int row = minRow; row <= maxRow; row++) {
-			for (int col = minCol; col < maxCol; col++) {
-				// Create a new board containing this move possibility
-				GomokuBoard childBoard = board.createCopy();
-				
-				// Attempt to add the piece to the board
-				boolean success = childBoard.addPiece(row, col, currentPlayer);
-
-				if (!success) {
-//					System.out.println("piece occupied" + row +", " + col);
-//					board.printBoard();
-					continue;
-				}
-			
-				// Store the child in the tree
-				GomokuGameNode child = new GomokuGameNode(childBoard, getNextPlayer(), row, col);
-				children.add(child);
-			}
-		}
-		*/
 		return children;
 	}
 	
@@ -261,10 +223,11 @@ public class GomokuGameNode {
 		}
 		
 		if (board.isWinner(computerPiece)) {
-			objValue = 100000;
+			objValue = 1000000;
 		} else if (board.isWinner(humanPiece)) {
-			objValue = -100000;
+			objValue = -1000000;
 		}
+		// Determine the number of various "threat" positions
 		int numHumanThrees    = board.getNumThrees(humanPiece);
 		int numComputerThrees = board.getNumThrees(computerPiece);
 
@@ -274,14 +237,7 @@ public class GomokuGameNode {
 		int numHumanStraightFours     = board.getNumStraightFours(humanPiece);
 		int numComputerStraightFours  = board.getNumStraightFours(computerPiece);
 
-		//logger.debug("numHumanThreeConnected=" + numHumanThreeConnected);
-		
-		//if (numComputerThreeConnected != 0)
-		//	logger.debug("numComputerThreeConnected=" + numComputerThreeConnected);
-
-//			if (numHumanThreeConnected != 0)
-//				logger.debug("numHumanThreeConnected=" + numHumanThreeConnected);
-
+		// Create an objective value
 		objValue += 30 * numComputerThrees;
 		objValue -= 50 * numHumanThrees;
 
@@ -291,9 +247,6 @@ public class GomokuGameNode {
 		objValue += 900 * numComputerStraightFours;
 		objValue -= 1000 * numHumanStraightFours;
 
-//		if (objValue != 0) {
-//			logger.debug("objValue=" + objValue);
-//		}
 		return objValue;
 	}
 

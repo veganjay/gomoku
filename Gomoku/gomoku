@@ -1,0 +1,5 @@
+#!/bin/sh
+DEBUG=false
+
+clear
+java -Dgomoku.debug=${DEBUG} -classpath bin com.veganjay.game.gomoku.GomokuGame
