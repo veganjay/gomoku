@@ -63,13 +63,12 @@ public class GomokuGameNode {
 	
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		sb.append("[");
+		sb.append("(");
 		sb.append(row);
 		sb.append(",");
 		sb.append(col);
-		sb.append("]");
+		sb.append(")");
 		
-		sb.append(" ");
 		return sb.toString();
 	}
 
@@ -223,29 +222,32 @@ public class GomokuGameNode {
 		}
 		
 		if (board.isWinner(computerPiece)) {
-			objValue = 1000000;
+			objValue = Integer.MAX_VALUE;
 		} else if (board.isWinner(humanPiece)) {
-			objValue = -1000000;
+			objValue = Integer.MIN_VALUE;
 		}
-		// Determine the number of various "threat" positions
-		int numHumanThrees    = board.getNumThrees(humanPiece);
-		int numComputerThrees = board.getNumThrees(computerPiece);
 
-		int numHumanFours     = board.getNumFours(humanPiece);
-		int numComputerFours  = board.getNumFours(computerPiece);
+		if (objValue != Integer.MIN_VALUE & objValue != Integer.MAX_VALUE) {
+			// Determine the number of various "threat" positions
+			int numHumanThrees    = board.getNumThrees(humanPiece);
+			int numComputerThrees = board.getNumThrees(computerPiece);
 
-		int numHumanStraightFours     = board.getNumStraightFours(humanPiece);
-		int numComputerStraightFours  = board.getNumStraightFours(computerPiece);
+			int numHumanFours     = board.getNumFours(humanPiece);
+			int numComputerFours  = board.getNumFours(computerPiece);
 
-		// Create an objective value
-		objValue += 30 * numComputerThrees;
-		objValue -= 50 * numHumanThrees;
+			int numHumanStraightFours     = board.getNumStraightFours(humanPiece);
+			int numComputerStraightFours  = board.getNumStraightFours(computerPiece);
 
-		objValue += 300 * numComputerFours;
-		objValue -= 500 * numHumanFours;
-
-		objValue += 900 * numComputerStraightFours;
-		objValue -= 1000 * numHumanStraightFours;
+			// Create an objective value
+			objValue += 30 * numComputerThrees;
+			objValue -= 50 * numHumanThrees;
+	
+			objValue += 300 * numComputerFours;
+			objValue -= 500 * numHumanFours;
+	
+			objValue += 900 * numComputerStraightFours;
+			objValue -= 1000 * numHumanStraightFours;
+		}
 
 		return objValue;
 	}
