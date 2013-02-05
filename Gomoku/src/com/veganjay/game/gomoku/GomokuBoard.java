@@ -3,7 +3,7 @@ package com.veganjay.game.gomoku;
 
 public class GomokuBoard {
 	
-	public static enum Piece { EMPTY, X, O };
+	public static enum Piece { INVALID, EMPTY, X, O };
 
 	// The Game board itself
 	protected Piece [][] board;
@@ -44,6 +44,24 @@ public class GomokuBoard {
 			}
 		}
 	}
+
+	public Piece getPiece(int row, int col) {
+		Piece p = Piece.INVALID;
+		
+		if (isValidRow(row) && isValidColumn(col)) {
+			p = board[row][col];
+		}
+			
+		return p;
+	}
+	public boolean isValidRow(int row) {
+		return (row >= 0 && row < SIZE);
+	}
+
+	public boolean isValidColumn(int column) {
+		return (column >= 0 && column < SIZE);
+	}
+
 	
 	/**
 	 * @param row
@@ -313,7 +331,7 @@ public class GomokuBoard {
 			   getNumThreesHorizontal(p) +
 			   getNumThreesDiagonal(p);
 	}
-	
+		
 	/**
 	 * TODO
 	 * Get the number of "broken threes" defined as:
@@ -647,6 +665,51 @@ public class GomokuBoard {
 			}
 		}
 		return num;
+	}
+	
+	private void evalFunction(Piece p) {
+		
+		int numThrees = 0;
+		
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++) {
+
+				numThrees = getThrees(p, i, j);
+			}
+		}
+		
+	}
+	
+	private int getThrees(Piece p, int row, int col) {
+		int numThrees = 0;
+		
+		if (isVerticalThree(p, row, col)) {
+			numThrees++;
+		}
+		
+		return numThrees;
+	}
+	
+	private boolean isVerticalThree(Piece p, int row, int col) {
+		boolean three = false;
+		
+		if (isValidRowRange(row, 6)) {
+			Piece p1 = board[row][col];
+			Piece p2 = board[row+1][col];
+			Piece p3 = board[row+2][col];
+			Piece p4 = board[row+3][col];
+			Piece p5 = board[row+4][col];
+			Piece p6 = board[row+5][col];
+			Piece p7 = board[row+6][col];
+			
+			three = isThree(p, p1, p2, p3, p4, p5, p6, p7);
+		}
+				
+		return three;
+	}
+
+	private boolean isValidRowRange(int row, int length) {
+		return isValidRow(row + length);
 	}
 	
 	private boolean isThree(Piece p, Piece p1, Piece p2, Piece p3, Piece p4,

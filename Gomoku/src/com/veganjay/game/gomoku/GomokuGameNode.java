@@ -51,7 +51,15 @@ public class GomokuGameNode {
 		} else if (this.board.isWinner(Piece.O)) {
 			terminal = true;
 		}
+		
+		if (terminal == true) {
+			logger.debug("Terminal node found. row="+ row+ ", col=" + col);
+		}
 		return terminal;
+	}
+	
+	public boolean isComputerWin() {
+		return this.board.isWinner(computerPiece);
 	}
 	protected Piece getNextPlayer() {
 		if (this.currentPlayer == Piece.X) {
@@ -222,11 +230,154 @@ public class GomokuGameNode {
 		}
 		
 		if (board.isWinner(computerPiece)) {
-			objValue = Integer.MAX_VALUE;
+			objValue = 100000;
 		} else if (board.isWinner(humanPiece)) {
-			objValue = Integer.MIN_VALUE;
+			objValue = -100000;
+		} else {
+			int numHumanFours = 0;
+			int numComputerFours = 0;
+
+			int numHumanThrees = 0;
+			int numComputerThrees = 0;
+
+			Piece p1, p2, p3, p4, p5, p6, p7, p8;
+			
+			// Look through the entire board
+			for (int i = 0; i < GomokuBoard.SIZE; i++) {
+				for (int j = 0; j < GomokuBoard.SIZE; j++) {
+
+					// Vertical Line
+					p1 = board.getPiece(i, j);
+					p2 = board.getPiece(i+1, j);
+					p3 = board.getPiece(i+2, j);
+					p4 = board.getPiece(i+3, j);
+					p5 = board.getPiece(i+4, j);
+					p6 = board.getPiece(i+5, j);
+					p7 = board.getPiece(i+6, j);
+
+					// Check for four threats
+					if (hasFourThreat(humanPiece, p1, p2, p3, p4, p5, p6)) {
+						numHumanFours++;
+					} else if (hasFourThreat(computerPiece, p1, p2, p3, p4, p5, p6)) {
+						numComputerFours++;
+					}
+					
+					// Check for three threats
+					if (hasThreeThreat(humanPiece, p1, p2, p3, p4, p5, p6, p7)) {
+						numHumanThrees++;
+					} else if (hasThreeThreat(computerPiece, p1, p2, p3, p4, p5, p6, p7)) {
+						numComputerThrees++;
+					}
+
+					// Horizontal Line
+					p1 = board.getPiece(i, j);
+					p2 = board.getPiece(i, j+1);
+					p3 = board.getPiece(i, j+2);
+					p4 = board.getPiece(i, j+3);
+					p5 = board.getPiece(i, j+4);
+					p6 = board.getPiece(i, j+5);
+					p7 = board.getPiece(i, j+6);
+					
+					// Check for four threats
+					if (hasFourThreat(humanPiece, p1, p2, p3, p4, p5, p6)) {
+						numHumanFours++;
+					} else if (hasFourThreat(computerPiece, p1, p2, p3, p4, p5, p6)) {
+						numComputerFours++;
+					}
+					
+					// Check for three threats
+					if (hasThreeThreat(humanPiece, p1, p2, p3, p4, p5, p6, p7)) {
+						numHumanThrees++;
+					} else if (hasThreeThreat(computerPiece, p1, p2, p3, p4, p5, p6, p7)) {
+						numComputerThrees++;
+					}
+					
+					// Diagonal Line A
+					p1 = board.getPiece(i, j);
+					p2 = board.getPiece(i+1, j+1);
+					p3 = board.getPiece(i+2, j+2);
+					p4 = board.getPiece(i+3, j+3);
+					p5 = board.getPiece(i+4, j+4);
+					p6 = board.getPiece(i+5, j+5);
+					p7 = board.getPiece(i+6, j+6);
+
+					// Check for four threats
+					if (hasFourThreat(humanPiece, p1, p2, p3, p4, p5, p6)) {
+						numHumanFours++;
+					} else if (hasFourThreat(computerPiece, p1, p2, p3, p4, p5, p6)) {
+						numComputerFours++;
+					}
+					
+					// Check for three threats
+					if (hasThreeThreat(humanPiece, p1, p2, p3, p4, p5, p6, p7)) {
+						numHumanThrees++;
+					} else if (hasThreeThreat(computerPiece, p1, p2, p3, p4, p5, p6, p7)) {
+						numComputerThrees++;
+					}
+					
+					// Diagonal Line B
+					p1 = board.getPiece(i, j);
+					p2 = board.getPiece(i+1, j-1);
+					p3 = board.getPiece(i+2, j-2);
+					p4 = board.getPiece(i+3, j-3);
+					p5 = board.getPiece(i+4, j-4);
+					p6 = board.getPiece(i+5, j-5);
+					p7 = board.getPiece(i+6, j-6);
+					
+
+					// Check for four threats
+					if (hasFourThreat(humanPiece, p1, p2, p3, p4, p5, p6)) {
+						numHumanFours++;
+					} else if (hasFourThreat(computerPiece, p1, p2, p3, p4, p5, p6)) {
+						numComputerFours++;
+					}
+					
+					// Check for three threats
+					if (hasThreeThreat(humanPiece, p1, p2, p3, p4, p5, p6, p7)) {
+						numHumanThrees++;
+					} else if (hasThreeThreat(computerPiece, p1, p2, p3, p4, p5, p6, p7)) {
+						numComputerThrees++;
+					}
+
+
+
+					/*
+					// Check for "Fours"
+					numHumanFours    += getNumFours(humanPiece, i, j);
+					numComputerFours += getNumFours(computerPiece, i, j);
+
+					// Check for "Straight Fours"
+					numHumanFours    += getNumStraightFours(humanPiece, i, j);
+					numComputerFours += getNumStraightFours(computerPiece, i, j);
+					
+					// Check for "Threes"
+					numHumanThrees    += getNumThrees(humanPiece, i, j);
+					numComputerThrees += getNumThrees(computerPiece, i, j);
+					*/
+				}
+			}
+			
+			// Assign an objective value to the board
+			/*
+			if (numHumanFours > 0 || numHumanThrees > 0) {
+				objValue += numHumanFours  * -400;
+				objValue += numHumanThrees * -300;
+			} else if (numComputerFours > 0 || numComputerThrees > 0) {
+				objValue += numComputerFours  * 400;
+				objValue += numComputerThrees * 300;				
+			}
+			*/
+			objValue += numHumanFours  * -400;
+			objValue += numHumanThrees * -300;
+			objValue += numComputerFours  * 400;
+			objValue += numComputerThrees * 300;				
+		
+			if (objValue != 0) {
+				//logger.debug("objValue=" + objValue);
+			}
 		}
 
+		/*
 		if (objValue != Integer.MIN_VALUE & objValue != Integer.MAX_VALUE) {
 			// Determine the number of various "threat" positions
 			int numHumanThrees    = board.getNumThrees(humanPiece);
@@ -248,8 +399,137 @@ public class GomokuGameNode {
 			objValue += 900 * numComputerStraightFours;
 			objValue -= 1000 * numHumanStraightFours;
 		}
+		*/
 
 		return objValue;
 	}
 
+	private boolean hasFourThreat(Piece humanPiece, Piece p1, Piece p2,
+			Piece p3, Piece p4, Piece p5, Piece p6) {
+		return isFour(humanPiece, p1, p2, p3, p4, p5) ||
+			isStraightFour(humanPiece, p1, p2, p3, p4, p5, p6);
+	}
+
+	private boolean hasThreeThreat(Piece humanPiece, Piece p1, Piece p2,
+			Piece p3, Piece p4, Piece p5, Piece p6, Piece p7) {
+		return isThree(humanPiece, p1, p2, p3, p4, p5, p6) ||
+			isThree(humanPiece, p1, p2, p3, p4, p5, p6, p7) || 
+			isBrokenThree(humanPiece, p1, p2, p3, p4, p5, p6);
+	}
+		
+	/**
+	 * Determine if a sequence is a "four" defined as:
+	 * A line of five squares, consisting in any order:
+	 * (4) ATTACKER, and (1) EMPTY
+	 */	
+	private boolean isFour(Piece p, Piece p1, Piece p2, Piece p3, Piece p4, Piece p5) {
+		boolean four = false;
+		
+		int numPiece = 0;
+		int numEmpty = 0;
+		
+		if (p1 == p) {
+			numPiece++;
+		} else if (p1 == Piece.EMPTY) {
+			numEmpty++;
+		}
+		
+		if (p2 == p) {
+			numPiece++;
+		} else if (p2 == Piece.EMPTY) {
+			numEmpty++;
+		}
+
+		if (p3 == p) {
+			numPiece++;
+		} else if (p3 == Piece.EMPTY) {
+			numEmpty++;
+		}
+
+		if (p4 == p) {
+			numPiece++;
+		} else if (p4 == Piece.EMPTY) {
+			numEmpty++;
+		}
+		if (p5 == p) {
+			numPiece++;
+		} else if (p5 == Piece.EMPTY) {
+			numEmpty++;
+		}
+
+		// Check for four attacker pieces and one empty
+		// in any order
+		if (numPiece == 4 && numEmpty == 1) {
+			four = true;
+		}
+		return four;
+	}
+	
+	/**
+	 * Determine if a sequence is a "Straight Four" defined as:
+	 * A line of six squares, consisting in order:
+	 * EMPTY, ATTACKER, ATTACKER, ATTACKER, ATTACKER, EMPTY
+	 */
+	private boolean isStraightFour(Piece p, Piece p1, Piece p2, Piece p3, Piece p4, Piece p5, Piece p6) {
+		return (p1 == Piece.EMPTY &&
+			p2 == p && p3 == p && p4 == p && p5 == p &&
+			p6 == Piece.EMPTY);
+	}
+	/**
+	 * Determine if a sequence is a "Three" defined as:
+	 * A line of seven squares, consisting in order:
+	 * EMPTY, EMPTY, ATTACKER, ATTACKER, ATTACKER, EMPTY, EMPTY
+	 */
+	private boolean isThree(Piece p, Piece p1, Piece p2, Piece p3, Piece p4, Piece p5, Piece p6, Piece p7) {
+		boolean three = false;
+		
+		if (p1 == Piece.EMPTY && p2 == Piece.EMPTY &&
+			p3 == p && p4 == p && p5 == p &&
+			p6 == Piece.EMPTY && p7 == Piece.EMPTY) {
+			three = true;
+		}
+		
+		return three;
+	}
+	
+	/**
+	 * Determine if a sequence is a "Three" defined as:
+	 * A line of six squares, consisting of 
+	 * EMPTY, ATTACKER, ATTACKER, ATTACKER, EMPTY, EMPTY or
+	 * EMPTY, EMPTY, ATTACKER, ATTACKER, ATTACKER, EMPTY
+	 */
+	private boolean isThree(Piece p, Piece p1, Piece p2, Piece p3, Piece p4, Piece p5, Piece p6) {
+		boolean three = false;
+		
+		if (p1 == Piece.EMPTY && p6 == Piece.EMPTY) {
+			if ( 	(p2 == p && p3 == p && p4 == p && p5 == Piece.EMPTY) ||
+					(p2 == Piece.EMPTY && p3 == p && p4 == p && p5 == p) ) {
+				three = true;
+			}
+		}
+		
+		return three;
+	}
+	
+	/**
+	 * Determine if a sequence is a "Broken Three" defined as:
+	 * A line of six squares which the attacker has occupied three non-consecutive squares
+	 * of the four center squares, while the other three squares are empty:
+	 * EMPTY, ATTACKER, ATTACKER, EMPTY, ATTACKER, EMPTY or
+	 * EMPTY, ATTACKER, EMPTY, ATTACKER, ATTACKER, EMPTY
+	 * @param p
+	 * @return number of broken threes
+	 */
+	private boolean isBrokenThree(Piece p, Piece p1, Piece p2, Piece p3, Piece p4, Piece p5, Piece p6) {
+		boolean three = false;
+		
+		if (p1 == Piece.EMPTY && p6 == Piece.EMPTY) {
+			if ( (p2 == p && p3 == p && p4 == Piece.EMPTY && p5 == p) ||
+				 (p2 == p && p3 == Piece.EMPTY && p4 == p && p5 == p) ) {
+				three = true;
+			}
+		}
+		
+		return three;
+	}	
 }
