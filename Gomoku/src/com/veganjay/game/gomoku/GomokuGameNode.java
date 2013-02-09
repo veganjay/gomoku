@@ -51,10 +51,6 @@ public class GomokuGameNode {
 		} else if (this.board.isWinner(Piece.O)) {
 			terminal = true;
 		}
-		
-		if (terminal == true) {
-			logger.debug("Terminal node found. row="+ row+ ", col=" + col);
-		}
 		return terminal;
 	}
 	
@@ -338,68 +334,14 @@ public class GomokuGameNode {
 					} else if (hasThreeThreat(computerPiece, p1, p2, p3, p4, p5, p6, p7)) {
 						numComputerThrees++;
 					}
-
-
-
-					/*
-					// Check for "Fours"
-					numHumanFours    += getNumFours(humanPiece, i, j);
-					numComputerFours += getNumFours(computerPiece, i, j);
-
-					// Check for "Straight Fours"
-					numHumanFours    += getNumStraightFours(humanPiece, i, j);
-					numComputerFours += getNumStraightFours(computerPiece, i, j);
-					
-					// Check for "Threes"
-					numHumanThrees    += getNumThrees(humanPiece, i, j);
-					numComputerThrees += getNumThrees(computerPiece, i, j);
-					*/
 				}
 			}
-			
-			// Assign an objective value to the board
-			/*
-			if (numHumanFours > 0 || numHumanThrees > 0) {
-				objValue += numHumanFours  * -400;
-				objValue += numHumanThrees * -300;
-			} else if (numComputerFours > 0 || numComputerThrees > 0) {
-				objValue += numComputerFours  * 400;
-				objValue += numComputerThrees * 300;				
-			}
-			*/
+
 			objValue += numHumanFours  * -400;
 			objValue += numHumanThrees * -300;
 			objValue += numComputerFours  * 400;
 			objValue += numComputerThrees * 300;				
-		
-			if (objValue != 0) {
-				//logger.debug("objValue=" + objValue);
-			}
 		}
-
-		/*
-		if (objValue != Integer.MIN_VALUE & objValue != Integer.MAX_VALUE) {
-			// Determine the number of various "threat" positions
-			int numHumanThrees    = board.getNumThrees(humanPiece);
-			int numComputerThrees = board.getNumThrees(computerPiece);
-
-			int numHumanFours     = board.getNumFours(humanPiece);
-			int numComputerFours  = board.getNumFours(computerPiece);
-
-			int numHumanStraightFours     = board.getNumStraightFours(humanPiece);
-			int numComputerStraightFours  = board.getNumStraightFours(computerPiece);
-
-			// Create an objective value
-			objValue += 30 * numComputerThrees;
-			objValue -= 50 * numHumanThrees;
-	
-			objValue += 300 * numComputerFours;
-			objValue -= 500 * numHumanFours;
-	
-			objValue += 900 * numComputerStraightFours;
-			objValue -= 1000 * numHumanStraightFours;
-		}
-		*/
 
 		return objValue;
 	}

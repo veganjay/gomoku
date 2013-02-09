@@ -61,6 +61,8 @@ public class GomokuGame {
 			System.out.println("Enter a valid move");
 			playHumanTurn();
 		}
+		
+		System.out.println("You moved to (" + row + "," + col + ")" );
 
 	}
 

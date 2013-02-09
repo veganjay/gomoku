@@ -3,7 +3,6 @@ package com.veganjay.game.gomoku;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
-import java.util.Vector;
 
 import com.veganjay.game.gomoku.GomokuBoard.Piece;
 
@@ -38,8 +37,6 @@ public class GomokuAI {
 	
 	private class Result {
 		int score;
-		int alpha;
-		int beta;
 		
 		ArrayList<GomokuGameNode> gameNodes;
 		public Result() {
@@ -68,6 +65,26 @@ public class GomokuAI {
 
 		public void addAll(Collection<GomokuGameNode> c) {
 			this.gameNodes.addAll(c);
+		}
+		
+		public String getMoveList() {
+			StringBuffer sb = new StringBuffer();
+			boolean first = true;
+			if (gameNodes != null ) {
+				sb.append("{");
+				for (GomokuGameNode node: gameNodes) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(",");
+					}
+					sb.append("(");
+					sb.append(node.getMove());
+					sb.append(")");
+				}
+				sb.append("}");
+			}
+			return sb.toString();
 		}
 
 	}
@@ -133,7 +150,6 @@ public class GomokuAI {
 		int retval = needMax ? alpha : beta;		
 		best.setScore(retval);
 		return best;
-		//return needMax ? alpha : beta;
 	}
 	
 	/**
@@ -145,59 +161,21 @@ public class GomokuAI {
 		Move move = null;
 		
 		int score = 0;
-		int bestScore = Integer.MIN_VALUE;
-		Result bestResult = null;
-		
-		GomokuGameNode bestMove = null;
 		GomokuGameNode node = new GomokuGameNode(board, computerPiece);
 		
-		Set<GomokuGameNode> children = node.getChildren();
 		numMoves++;
 		numComparisons = 0;
 
 		logger.debug("getMove() entered.");
 		
-		/*
-		for (GomokuGameNode child : children) {
-			// Use Minimax to get computer move
-			Result result = this.minimax(child, MINMAX_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE, false);
-			
-			score = result.getScore();
-			
-			// Display the move and score, for debugging
-			logger.debug("Move:" + child + ", score=" + score);
-			
-			// Chose the best move
-			if (score >= bestScore) {
-				bestScore = score;
-				bestMove  = child;
-				bestResult = result;
-			}
-		}
-
-
-		logger.debug("Number of comparisons="+numComparisons);
-		if (bestMove != null) {
-			logger.debug("bestMove " + bestMove.getMove() + ", bestScore = " + bestScore);
-			logger.debug("bestResult.getMove= " + bestResult.getMove() + " bestResult.score=" + bestResult.getScore());
-			move = bestMove.getMove();
-			StringBuffer sb = new StringBuffer();
-			sb.append("Follow-up moves: [");
-			for (GomokuGameNode n: bestResult.gameNodes) {
-				sb.append(n);
-				sb.append(",");
-			}
-			sb.append("]");
-			logger.debug(sb.toString());
-		} else {
-			System.err.println("bestMove was null!");
-		}
-		*/
+		// Call Min Max
 		Result result = this.minimaxHelper(node, MINMAX_DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE, true);
+		
 		score = result.getScore();
 		move  = result.getMove();
 		logger.debug("bestMove " + move +  ", bestScore = " + score + " numComparisons=" + numComparisons);
-
+		logger.debug("moveList=" + result.getMoveList());
+		
 		return move;
 	}
 } // End class GomokuAI
