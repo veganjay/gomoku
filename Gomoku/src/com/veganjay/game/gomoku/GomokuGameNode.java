@@ -36,6 +36,7 @@ public class GomokuGameNode {
 	public Move getMove() {
 		return new Move(row, col);
 	}
+
 	
 	/**
 	 * 
@@ -181,9 +182,9 @@ public class GomokuGameNode {
 		return col;
 	}
 	
-	private Set<Move> getAdjacentMoves() {
+	public Set<Move> getAdjacentMoves() {
 		HashSet<Move> moves = new HashSet<Move>();
-		
+
 		for (int row = 0; row < GomokuBoard.SIZE; row++) {
 			for (int col = 0; col < GomokuBoard.SIZE; col++) {
 				if (!board.isOccupied(row, col)) {
@@ -219,6 +220,8 @@ public class GomokuGameNode {
 	public int getObjectiveValue(Piece computerPiece) {
 		int objValue = 0;
 		
+		// TODO - move isWinner inside loop
+		
 		Piece humanPiece = Piece.X;
 		
 		if (computerPiece.equals(Piece.X)) {
@@ -235,6 +238,9 @@ public class GomokuGameNode {
 
 			int numHumanThrees = 0;
 			int numComputerThrees = 0;
+
+			int numHumanTwos = 0;
+			int numComputerTwos = 0;
 
 			Piece p1, p2, p3, p4, p5, p6, p7, p8;
 			
@@ -264,6 +270,13 @@ public class GomokuGameNode {
 					} else if (hasThreeThreat(computerPiece, p1, p2, p3, p4, p5, p6, p7)) {
 						numComputerThrees++;
 					}
+					
+					// Check for two threats
+					if (hasTwoThreat(humanPiece, p1, p2, p3, p4, p5)) {
+						numHumanTwos++;
+					} else if (hasTwoThreat(computerPiece, p1, p2, p3, p4, p5)) {
+						numComputerTwos++;
+					}
 
 					// Horizontal Line
 					p1 = board.getPiece(i, j);
@@ -286,6 +299,13 @@ public class GomokuGameNode {
 						numHumanThrees++;
 					} else if (hasThreeThreat(computerPiece, p1, p2, p3, p4, p5, p6, p7)) {
 						numComputerThrees++;
+					}
+					
+					// Check for two threats
+					if (hasTwoThreat(humanPiece, p1, p2, p3, p4, p5)) {
+						numHumanTwos++;
+					} else if (hasTwoThreat(computerPiece, p1, p2, p3, p4, p5)) {
+						numComputerTwos++;
 					}
 					
 					// Diagonal Line A
@@ -311,6 +331,14 @@ public class GomokuGameNode {
 						numComputerThrees++;
 					}
 					
+					// Check for two threats
+					if (hasTwoThreat(humanPiece, p1, p2, p3, p4, p5)) {
+						numHumanTwos++;
+					} else if (hasTwoThreat(computerPiece, p1, p2, p3, p4, p5)) {
+						numComputerTwos++;
+					}
+
+					
 					// Diagonal Line B
 					p1 = board.getPiece(i, j);
 					p2 = board.getPiece(i+1, j-1);
@@ -334,13 +362,29 @@ public class GomokuGameNode {
 					} else if (hasThreeThreat(computerPiece, p1, p2, p3, p4, p5, p6, p7)) {
 						numComputerThrees++;
 					}
+					
+					// Check for two threats
+					if (hasTwoThreat(humanPiece, p1, p2, p3, p4, p5)) {
+						numHumanTwos++;
+					} else if (hasTwoThreat(computerPiece, p1, p2, p3, p4, p5)) {
+						numComputerTwos++;
+					}
+
 				}
 			}
 
-			objValue += numHumanFours  * -400;
-			objValue += numHumanThrees * -300;
-			objValue += numComputerFours  * 400;
-			objValue += numComputerThrees * 300;				
+			if (numHumanFours > 1) {
+				objValue = -90000;
+			} else if (numComputerFours > 1) {
+				objValue = 90000;
+			} else {
+				objValue += numHumanFours  * -1000;
+				objValue += numHumanThrees * -500;
+				objValue += numHumanTwos   * -20;
+				objValue += numComputerFours  * 1000;
+				objValue += numComputerThrees * 500;				
+				objValue += numComputerTwos   * 20;
+			}
 		}
 
 		return objValue;
@@ -357,6 +401,11 @@ public class GomokuGameNode {
 		return isThree(humanPiece, p1, p2, p3, p4, p5, p6) ||
 			isThree(humanPiece, p1, p2, p3, p4, p5, p6, p7) || 
 			isBrokenThree(humanPiece, p1, p2, p3, p4, p5, p6);
+	}
+	
+	private boolean hasTwoThreat(Piece humanPiece, Piece p1, Piece p2,
+			Piece p3, Piece p4, Piece p5) {
+		return isTwo(humanPiece, p1, p2, p3, p4, p5);
 	}
 		
 	/**
@@ -473,5 +522,53 @@ public class GomokuGameNode {
 		}
 		
 		return three;
-	}	
+	}
+	
+	/**
+	 * Determine if a sequence is a "two" defined as:
+	 * A line of five squares, consisting in any order:
+	 * (2) ATTACKER, and (3) EMPTY	 
+	 */
+	private boolean isTwo(Piece p, Piece p1, Piece p2, Piece p3, Piece p4, Piece p5) {
+		boolean two = false;
+		
+		int numPiece = 0;
+		int numEmpty = 0;
+		
+		if (p1 == p) {
+			numPiece++;
+		} else if (p1 == Piece.EMPTY) {
+			numEmpty++;
+		}
+		
+		if (p2 == p) {
+			numPiece++;
+		} else if (p2 == Piece.EMPTY) {
+			numEmpty++;
+		}
+
+		if (p3 == p) {
+			numPiece++;
+		} else if (p3 == Piece.EMPTY) {
+			numEmpty++;
+		}
+
+		if (p4 == p) {
+			numPiece++;
+		} else if (p4 == Piece.EMPTY) {
+			numEmpty++;
+		}
+		if (p5 == p) {
+			numPiece++;
+		} else if (p5 == Piece.EMPTY) {
+			numEmpty++;
+		}
+
+		// Check for two attacker pieces and three empty
+		// in any order
+		if (numPiece == 2 && numEmpty == 3) {
+			two = true;
+		}
+		return two;
+	}
 }

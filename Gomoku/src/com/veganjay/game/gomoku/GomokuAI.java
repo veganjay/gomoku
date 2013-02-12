@@ -9,7 +9,7 @@ import com.veganjay.game.gomoku.GomokuBoard.Piece;
 public class GomokuAI {
 
 	// Constants
-	public static final int MINMAX_DEPTH = 4;//4;
+	public static final int MINMAX_DEPTH = 3;//4;
 	
 	public int numMoves = 0;
 	public int numComparisons;

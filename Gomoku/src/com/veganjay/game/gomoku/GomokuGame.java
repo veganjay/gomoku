@@ -99,8 +99,6 @@ public class GomokuGame {
 		return computerPiece;
 	}
 
-
-
 	private void initialize() {
 		board.reset();
 		if (getStartPlayer() == Player.HUMAN) {
