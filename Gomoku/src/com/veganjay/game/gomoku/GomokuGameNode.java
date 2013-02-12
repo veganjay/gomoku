@@ -219,6 +219,8 @@ public class GomokuGameNode {
 	public int getObjectiveValue(Piece computerPiece) {
 		int objValue = 0;
 		
+		// TODO - move isWinner inside loop
+		
 		Piece humanPiece = Piece.X;
 		
 		if (computerPiece.equals(Piece.X)) {

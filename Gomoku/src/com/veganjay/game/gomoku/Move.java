@@ -23,7 +23,14 @@ public class Move {
 
 	public void setCol(int col) {
 		this.col = col;
+	}	
+	
+	/*
+	public int hashCode() {
+		return (row * 100) + col;
 	}
+	*/
+	
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append(row);
